@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="vendor/prism/prism.css">
+    <link rel="stylesheet" href="css/default.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/3.0.1/github-markdown.min.css">
+    <style id="styleTag">
+
+    </style>
+</head>
+<body>
+
+<div id="code-wrapper">
+    <pre id="code"></pre>
+</div>
+
+<script src="vendor/prism/prism.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<script>
+    // 把code写到#code和style标签里
+    function writeCode(prefix,code,fn) {
+        let domCode = document.querySelector('#code');
+        let n=0;
+        let id=setInterval(() => {
+            n += 1;
+            domCode.innerHTML = Prism.highlight(prefix + code.substring(0, n), Prism.languages.css, 'css');
+            styleTag.innerHTML =prefix + code.substring(0, n);
+            domCode.scrollTop= domCode.scrollHeight;
+            if (n >= code.length) {
+                window.clearInterval(id);
+                fn.call();
+            }
+        },0);
+    }
+    function writeMarkdown(markdown,fn) {
+        let domPaper = document.querySelector('#paper>.content');
+        let n = 0;
+        let id = setInterval(() => {
+            n += 1;
+            domPaper.innerHTML = markdown.substring(0, n);
+            domPaper.scrollTop = domPaper.scrollHeight;
+            if (n >= markdown.length) {
+                window.clearInterval(id);
+                fn.call();
+            }
+        }, 35)
+    }
+
+    var result=`/*
+ * 你好，我是xxx
+ * 我将以动画的形式来介绍我自己
+ * 只用文字介绍太单调了
+ * 我就用些代码来介绍吧
+ * 首先准备一些样式
+ */
+
+*{
+  transition:all 1s;
+}
+html{
+  background:rgb(222,222,222);
+}
+#code{
+  border:1px solid #bbb;
+  padding:16px;
+}
+
+/* 我需要一点代码高亮 */
+
+.token.selector{color:#690;}
+.token.property{color:#905;}
+
+/* 加点3D效果 */
+#code{
+    animation:breath 0.5s infinite alternate-reverse;
+}
+
+/* 现在正式开始 */
+/* 我需要一张白纸 */
+#code-wrapper{
+  width: 50%; left: 0; position: fixed;
+  height: 100%;
+}
+#paper > .content{
+    display:block;
+}
+/*所以我可以在白纸上写字了，请看右边*/
+`
+
+var result2= `
+/*
+* 接下来用一个优秀的库marked.js
+* 把markdown变成HTML
+*/
+`
+
+
+var md=`
+### 自我介绍
+
+我叫李楠
+西安邮电大学大三学生
+自学前端半年
+
+### 技能介绍
+
+熟悉html css js jquery ajax vue
+
+### 项目介绍
+
+1. xxx
+2. xxx
+3. xxx
+
+### 联系方式
+
+- QQ:xxx
+- Email：xxx
+- 手机：xxxx
+`
+    //为什么writeCode是异步任务，而createPaper是同步任务
+writeCode('',result,()=>{
+    creatPaper(()=>{
+            writeMarkdown(md,()=>{
+                writeCode(result,result2,()=>{
+                    convertMarkdownToHtml.call();
+                })
+            })
+        });
+    });
+
+    function creatPaper(fn) {
+        var paper=document.createElement('div');
+        paper.id='paper';
+        var content=document.createElement('pre');
+        content.className='content';
+        paper.appendChild(content);
+        document.body.appendChild(paper);
+        fn && fn.call();
+    }
+    function convertMarkdownToHtml(fn){
+        var div = document.createElement('div')
+        div.className = 'html markdown-body'
+        div.innerHTML = marked(md)
+        let markdownContainer = document.querySelector('#paper > .content')
+        markdownContainer.replaceWith(div)
+        fn && fn.call()
+    }
+</script>
+</body>
+</html>
